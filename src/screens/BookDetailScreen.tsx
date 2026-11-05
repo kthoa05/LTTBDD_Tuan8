@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import { TodoBox } from "../components/TodoBox";
 import { LoadingView } from "../components/LoadingView";
@@ -52,7 +52,10 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
   }, [load]);
 
   // TODO BT8.5b: điểm trung bình = tổng rating / số review (0 nếu chưa có), dùng useMemo phụ thuộc [reviews]
-  const average = 0;
+  const average = useMemo(
+    () => (reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0),
+    [reviews]
+  );
 
   // TODO BT8.5c: gửi đánh giá
   //   1) chưa chọn sao → setFormError("Vui lòng chọn số sao"); comment rỗng → setFormError("Vui lòng nhập bình luận")
@@ -61,6 +64,28 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
   //   4) catch → setFormError(getErrorMessage(e)); finally → setSending(false)
   const submitReview = async () => {
     if (!user) return;
+    if (rating === 0) {
+      setFormError("Vui lòng chọn số sao");
+      return;
+    }
+    if (!comment.trim()) {
+      setFormError("Vui lòng nhập bình luận");
+      return;
+    }
+
+    setFormError(null);
+    setSending(true);
+    try {
+      const created = await addReview({ bookId, userId: user.id, userName: user.name, rating, comment: comment.trim() });
+      // Thêm ngay lên đầu danh sách, không gọi load() lại để khỏi tải cả trang
+      setReviews((prev) => [created, ...prev]);
+      setRating(0);
+      setComment("");
+    } catch (e) {
+      setFormError(getErrorMessage(e));
+    } finally {
+      setSending(false);
+    }
   };
 
   if (loading) return <LoadingView />;
