@@ -1,26 +1,48 @@
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { TodoBox } from "../components/TodoBox";
 import { FormField } from "../components/FormField";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { login } from "../services/authService"; // đã viết sẵn: login(email, password) → { user, token }
+import { login } from "../services/authService";
 import { getErrorMessage } from "../api/client";
 import { useAuth } from "../store/hooks";
-import { validateEmail, validatePassword } from "../utils/validators"; // đã viết sẵn: trả về chuỗi lỗi hoặc null
+import { validateEmail, validatePassword } from "../utils/validators";
 import { RootScreenProps } from "../navigation/types";
 import { colors } from "../theme";
 
 export function LoginScreen({ navigation, route }: RootScreenProps<"Login">) {
   const { signIn } = useAuth();
-  // TODO BT8.1: khai báo state: email, password, errors, submitError, loading
-  //   gợi ý: const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // TODO BT8.1: viết hàm submit
-  //   1) validate 2 ô → setErrors; còn lỗi thì dừng
-  //   2) setLoading(true) → gọi login(email, password) → signIn(user, token)
-  //   3) nếu route.params?.redirectTo === "Checkout" → navigation.replace("Checkout", { total: route.params.total ?? 0 })
-  //      ngược lại → navigation.navigate("Tabs", { screen: "Home" })
-  //   4) catch → setSubmitError(getErrorMessage(err)); finally → setLoading(false)
+  const submit = async () => {
+    // 1) Kiểm tra từng ô, lỗi nào cũng gom vào errors để hiện ngay dưới ô đó
+    const e = { email: validateEmail(email), password: validatePassword(password) };
+    setErrors(e);
+    if (e.email || e.password) return;
+
+    // 2) Gọi API; loading làm nút bị khóa để không bấm hai lần
+    setLoading(true);
+    setSubmitError(null);
+    try {
+      const { user, token } = await login(email, password);
+      signIn(user, token);
+
+      // 3) Đi từ giỏ hàng sang đăng nhập thì quay lại Thanh toán, còn lại về Home
+      if (route.params?.redirectTo === "Checkout") {
+        navigation.replace("Checkout", { total: route.params.total ?? 0 });
+      } else {
+        navigation.navigate("Tabs", { screen: "Home" });
+      }
+    } catch (err) {
+      // 4) Lỗi chung (sai mật khẩu, mất mạng...) hiện một dòng đỏ phía trên nút
+      setSubmitError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -28,7 +50,24 @@ export function LoginScreen({ navigation, route }: RootScreenProps<"Login">) {
         <Text style={styles.logo}>📚</Text>
         <Text style={styles.title}>Đăng nhập BookStore</Text>
 
-        <TodoBox id="BT8.1">{"Form đăng nhập: 2 ô FormField (Email, Mật khẩu — secureTextEntry), lỗi hiện NGAY DƯỚI từng ô, dòng lỗi chung (đỏ), nút PrimaryButton “Đăng nhập” có loading."}</TodoBox>
+        <FormField
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          error={errors.email}
+          keyboardType="email-address"
+        />
+        <FormField
+          label="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          error={errors.password}
+          secureTextEntry
+        />
+
+        {submitError ? <Text style={styles.submitError}>{submitError}</Text> : null}
+
+        <PrimaryButton title="Đăng nhập" onPress={submit} loading={loading} />
 
         <Pressable onPress={() => navigation.replace("Register", route.params)}>
           <Text style={styles.link}>Chưa có tài khoản? Đăng ký</Text>
