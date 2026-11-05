@@ -6,4 +6,8 @@ import { saveJSON } from "../storage/storage";
 export function useAutoPersist<T>(key: string, value: T, ready: boolean) {
   // TODO BT8.7b: viết useEffect — nếu ready thì saveJSON(key, value); phụ thuộc [key, value, ready]
   //   Vì sao cần cờ ready? (xem câu hỏi bổ sung trong tài liệu)
+  useEffect(() => {
+    // Chưa đọc xong dữ liệu cũ thì giỏ còn rỗng → không ghi, tránh đè mất dữ liệu đã lưu
+    if (ready) saveJSON(key, value);
+  }, [key, value, ready]);
 }

@@ -19,7 +19,8 @@ export function CartScreen({ navigation }: TabScreenProps<"Cart">) {
   // TODO BT8.7a: xóa sản phẩm có XÁC NHẬN — dùng confirmDialog(title, message, onConfirm) đã viết sẵn ở utils/dialog.ts
   //   (Alert.alert không chạy trên web nên đã bọc sẵn). Hiện tại xóa ngay không hỏi.
   const askRemove = (bookId: number) => {
-    remove(bookId);
+    const item = items.find((i) => i.bookId === bookId);
+    confirmDialog("Xóa sản phẩm", `Xóa "${item?.title ?? "sản phẩm"}" khỏi giỏ hàng?`, () => remove(bookId));
   };
 
   // TODO BT8.4: bảo vệ Checkout — nếu isLoggedIn → navigate("Checkout", { total: finalTotal })

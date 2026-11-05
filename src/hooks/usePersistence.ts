@@ -23,8 +23,15 @@ export function usePersistence() {
   useEffect(() => {
     (async () => {
       // TODO BT8.3 (auto-login): const auth = await loadAuth(); nếu có token + user → dispatch(setCredentials(auth))
-      const auth = await loadAuth();
+      // Đọc phiên, giỏ hàng và yêu thích cùng lúc
+      const [auth, cart, wish] = await Promise.all([
+        loadAuth(),
+        loadJSON<CartItem[]>(CART_KEY),
+        loadJSON<number[]>(WISHLIST_KEY),
+      ]);
       if (auth?.token && auth.user) dispatch(setCredentials(auth));
+      if (cart) dispatch(hydrateCart(cart));
+      if (wish) dispatch(hydrateWishlist(wish));
       // TODO BT8.7b (giỏ hàng + yêu thích): đọc loadJSON<CartItem[]>(CART_KEY) và loadJSON<number[]>(WISHLIST_KEY)
       //   rồi dispatch(hydrateCart(...)) / dispatch(hydrateWishlist(...)). Gợi ý: dùng Promise.all để đọc 3 thứ song song.
       setReady(true);
@@ -39,6 +46,8 @@ export function usePersistence() {
   }, [ready, user, token]);
 
   // TODO BT8.7b: gọi useAutoPersist(CART_KEY, cartItems, ready) và useAutoPersist(WISHLIST_KEY, wishlistIds, ready)
+  useAutoPersist(CART_KEY, cartItems, ready);
+  useAutoPersist(WISHLIST_KEY, wishlistIds, ready);
 
   return ready;
 }
