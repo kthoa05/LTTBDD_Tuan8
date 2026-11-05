@@ -57,7 +57,6 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
     () => (reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0),
     [reviews]
   );
-
   // TODO BT8.5c: gửi đánh giá
   //   1) chưa chọn sao → setFormError("Vui lòng chọn số sao"); comment rỗng → setFormError("Vui lòng nhập bình luận")
   //   2) setSending(true) → addReview({ bookId, userId: user.id, userName: user.name, rating, comment: comment.trim() })
@@ -73,7 +72,6 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
       setFormError("Vui lòng nhập bình luận");
       return;
     }
-
     setFormError(null);
     setSending(true);
     try {

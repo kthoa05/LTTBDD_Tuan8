@@ -174,6 +174,12 @@
       "email": "a@bookstore.vn",
       "password": "123456",
       "phone": "0912345678"
+    },
+    {
+      "name": "thoale",
+      "email": "thoa.le@bookstore.vn",
+      "password": "123456",
+      "id": 3
     }
   ],
   "orders": [
@@ -325,6 +331,15 @@
       "rating": 4,
       "comment": "Ví dụ rõ ràng, dễ theo dõi.",
       "createdAt": "2026-10-08T13:00:00.000Z"
+    },
+    {
+      "bookId": 1,
+      "userId": 1,
+      "userName": "Học viên Demo",
+      "rating": 5,
+      "comment": "aaa",
+      "createdAt": "2026-11-05T12:09:37.728Z",
+      "id": 9
     }
   ],
   "notifications": [
