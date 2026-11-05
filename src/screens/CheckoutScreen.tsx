@@ -5,6 +5,8 @@ import { useAuth } from "../store/hooks";
 import { colors, formatPrice } from "../theme";
 
 // KHUNG TỐI GIẢN: form địa chỉ + đặt hàng làm ở buổi sau.
+// TODO BT8.4 (lớp bảo vệ thứ 2): dùng useAuth() → isLoggedIn; trong useEffect, nếu chưa đăng nhập thì
+//   navigation.replace("Login", { redirectTo: "Checkout", total: route.params.total }); chưa đăng nhập thì return null.
 export function CheckoutScreen({ navigation, route }: RootScreenProps<"Checkout">) {
   const { isLoggedIn } = useAuth();
 

@@ -22,7 +22,8 @@ export function CartScreen({ navigation }: TabScreenProps<"Cart">) {
     remove(bookId);
   };
 
-  // Bảo vệ Checkout: chưa đăng nhập thì sang Login và nhớ đích đến để quay lại Thanh toán
+  // TODO BT8.4: bảo vệ Checkout — nếu isLoggedIn → navigate("Checkout", { total: finalTotal })
+  //   chưa đăng nhập → navigate("Login", { redirectTo: "Checkout", total: finalTotal })
   const goCheckout = () => {
     if (isLoggedIn) {
       navigation.navigate("Checkout", { total: finalTotal });

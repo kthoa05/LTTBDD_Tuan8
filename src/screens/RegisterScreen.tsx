@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { FormField } from "../components/FormField";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { register } from "../services/authService";
+import { register } from "../services/authService"; // đã viết sẵn: register(name, email, password)
 import { getErrorMessage } from "../api/client";
 import { useAuth } from "../store/hooks";
 import { validateEmail, validatePassword, validateRequired } from "../utils/validators";
@@ -11,6 +11,9 @@ import { colors } from "../theme";
 
 export function RegisterScreen({ navigation, route }: RootScreenProps<"Register">) {
   const { signIn } = useAuth();
+  // TODO BT8.2: state name, email, password, confirm, errors (Record<string, string | null>), submitError, loading
+  // TODO BT8.2: hàm submit giống BT8.1, thêm luật: "Nhập lại mật khẩu" phải khớp mật khẩu
+  //   validateRequired("họ tên")(name) trả về hàm validate tên
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

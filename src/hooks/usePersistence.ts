@@ -22,7 +22,7 @@ export function usePersistence() {
 
   useEffect(() => {
     (async () => {
-      // Auto-login: đã lưu token + user thì khôi phục phiên trước khi hiện màn hình chính
+      // TODO BT8.3 (auto-login): const auth = await loadAuth(); nếu có token + user → dispatch(setCredentials(auth))
       const auth = await loadAuth();
       if (auth?.token && auth.user) dispatch(setCredentials(auth));
       // TODO BT8.7b (giỏ hàng + yêu thích): đọc loadJSON<CartItem[]>(CART_KEY) và loadJSON<number[]>(WISHLIST_KEY)
@@ -33,7 +33,7 @@ export function usePersistence() {
 
   useEffect(() => {
     if (!ready) return;
-    // Đăng nhập → lưu phiên; đăng xuất (user/token về null) → xóa phiên đã lưu
+    // TODO BT8.3: có user + token → saveAuth({ user, token }); ngược lại (đã đăng xuất) → clearAuth()
     if (user && token) saveAuth({ user, token });
     else clearAuth();
   }, [ready, user, token]);
