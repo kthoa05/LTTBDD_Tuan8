@@ -18,6 +18,7 @@ export function LoginScreen({ navigation, route }: RootScreenProps<"Login">) {
   const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // BT8.Q5: bật/tắt hiện mật khẩu
 
   // TODO BT8.1: viết hàm submit
   //   1) validate 2 ô → setErrors; còn lỗi thì dừng
@@ -70,7 +71,12 @@ export function LoginScreen({ navigation, route }: RootScreenProps<"Login">) {
           value={password}
           onChangeText={setPassword}
           error={errors.password}
-          secureTextEntry
+          secureTextEntry={!showPassword}
+          right={
+            <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8} accessibilityLabel={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}>
+              <Text style={styles.eye}>{showPassword ? "🙈" : "👁"}</Text>
+            </Pressable>
+          }
         />
 
         {submitError ? <Text style={styles.submitError}>{submitError}</Text> : null}
@@ -94,6 +100,7 @@ const styles = StyleSheet.create({
   logo: { fontSize: 56, textAlign: "center" },
   title: { fontSize: 22, fontWeight: "800", color: colors.navy, textAlign: "center", marginBottom: 6 },
   submitError: { color: colors.danger, textAlign: "center" },
+  eye: { fontSize: 22 },
   link: { color: colors.indigo, fontWeight: "700", textAlign: "center" },
   hint: { backgroundColor: "#E0F2FE", padding: 10, borderRadius: 10 },
   hintText: { color: colors.navy, textAlign: "center", fontSize: 12 },
