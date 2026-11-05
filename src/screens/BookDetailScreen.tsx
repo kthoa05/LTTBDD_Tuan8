@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
-import { TodoBox } from "../components/TodoBox";
 import { LoadingView } from "../components/LoadingView";
 import { ErrorView } from "../components/ErrorView";
 import { RatingStars } from "../components/RatingStars";
@@ -41,6 +40,8 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
       setBook(b);
       setReviews(r);
       // TODO BT8.C1 (thử thách): sách liên quan = getBooks({ categoryId: b.categoryId }) bỏ sách hiện tại → setRelated(...)
+      const sameCategory = await getBooks({ categoryId: b.categoryId });
+      setRelated(sameCategory.filter((x) => x.id !== b.id));
     } catch (e) {
       setError(getErrorMessage(e));
     } finally {
@@ -142,7 +143,6 @@ export function BookDetailScreen({ navigation, route }: RootScreenProps<"BookDet
         ))
       )}
 
-      <TodoBox id="BT8.C1">{"THỬ THÁCH: hàng ngang “Sách liên quan” cuối trang (FlatList horizontal, dùng BookCard)."}</TodoBox>
       {related.length > 0 && (
         <>
           <Text style={styles.h}>Sách liên quan</Text>
